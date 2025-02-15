@@ -16,7 +16,7 @@ export const SectionContainer = forwardRef<
     ref,
   ) => {
     return (
-      <div className={cn("relative h-full w-full", containerClassName)}>
+      <div className={cn("relative pl-6", containerClassName)}>
         <Container
           ref={ref}
           className={cn("pt-10", className, padded ? "px-4" : "")}

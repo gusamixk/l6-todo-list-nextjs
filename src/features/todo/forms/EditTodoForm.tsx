@@ -9,33 +9,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useCreateTodo, useTodos } from "../api";
-import { CreateTodoFormInner } from "./CreateTodoFormInner";
+import { useEffect, useState } from "react";
+import { useTodos } from "../api";
 import { useForm } from "react-hook-form";
-import { CreateTodoFormSchemas } from "../types";
-import { createTodoFormSchemas } from "../schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useUpdateTodo } from "../api/useUpdateTodo";
+import { UpdateTodoFormSchema } from "../types";
+import { updateTodoFormSchemas } from "../schemas";
+import { EditTodoFormInner } from "./EditTodoFormInner";
+import { useTodosById } from "../api/useTodo";
+import { useRouter } from "next/navigation";
 
-export const CreateTodoForm = () => {
-  const {refetch : refetchTodos} = useTodos();
-  const [todo, setTodo] = useState<string>("");
-  const { mutate: createTodo, isPending: isCreateTodoPending } =
-    useCreateTodo({
+type EditTodoFormProps = {
+  todoId : string;
+}
+
+export const EditTodoForm = ({ todoId }: EditTodoFormProps) => {
+  const { data: todoData } = useTodosById(todoId);
+  const router = useRouter();
+  // console.log(todoData);
+  const { mutate: UpdateTodo , isPending: isUpdateTodoPending} =
+    useUpdateTodo({
+
       onSuccess: () => {
-        form.reset();
+        router.push("/todo");
         toast.success("Todo added successfully");
-        void refetchTodos();
       },
       onError: () => {
         toast.error("Failed to add todo")
       },
       onMutate: () => {
-        // toast.loading("Adding todo...")
-        },
+        toast.loading("Adding todo...")},
     });
   
     const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,16 +53,22 @@ export const CreateTodoForm = () => {
   //   e.preventDefault();
   //   await createTodo({ text: todo });
   // };
-  const form = useForm<CreateTodoFormSchemas>({
+
+  const form = useForm<UpdateTodoFormSchema>({
     defaultValues: {
       text: "",
     },
-    resolver: zodResolver(createTodoFormSchemas),
+    resolver: zodResolver(updateTodoFormSchemas),
   })
-  const onSubmit = (values: CreateTodoFormSchemas) =>
-    createTodo(values);
-  // createTodo(values)
-  // const onSubmit = (values: CreateTodoFormSchemas) => console.log(values);
+  const onSubmit = (values: UpdateTodoFormSchema) => {
+    UpdateTodo({id: todoId, values});
+  }; 
+ 
+  useEffect(() => {
+    if (todoData) {
+      form.reset({text : todoData.text}); 
+    }
+  }, [todoData, form]);
 
   return (
     <Card className="mb-20">
@@ -66,7 +79,7 @@ export const CreateTodoForm = () => {
 
       <CardContent>
         <Form {...form}>
-          <CreateTodoFormInner
+          <EditTodoFormInner
             formId="todo-form"
             onSubmit={onSubmit}
             handleChangeTodo={handleChangeTodo}
@@ -75,14 +88,14 @@ export const CreateTodoForm = () => {
 
       </CardContent>
       <CardFooter className="place-content-end">
-        <Button form="todo-form" disabled={isCreateTodoPending}>
-          {isCreateTodoPending ? (
+        <Button form="todo-form" disabled={isUpdateTodoPending || !form.formState.isDirty}>
+          {isUpdateTodoPending ? (
             <>
               <Loader2 className="animate-spin" />
-              Adding...
+              Update...
             </>
           ) : (
-            "Add"
+            "Update"
           )}
         </Button>
       </CardFooter>

@@ -1,31 +1,25 @@
 import { Input } from "@/components/ui/input";
-import { CreateTodoFormSchemas } from "../types";
+import { UpdateTodoFormSchema, UpdateTodoFormSchemas } from "../types";
 import { z } from "zod";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFormContext } from "react-hook-form";
-import { createTodoFormSchemas } from "../schemas";
+import type {updateTodoFormSchemas } from "../schemas";
 
-type CreateTodoFormInnerProps = {
+type EditTodoFormInnerProps = {
   formId: string;
   // onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  onSubmit: (values: CreateTodoFormSchemas) => void;
+  onSubmit: (values: UpdateTodoFormSchema) => void;
   handleChangeTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-  // const form = useForm<z.infer<typeof createTodoFormSchemas>({
-  //   defaultValues: {
-  //     text:"",
-  //   },
-  //   resolver: zodResolver(createTodoFormSchemas),
-  // })
-
-export const CreateTodoFormInner = ({
+export const EditTodoFormInner = ({
   formId,
   onSubmit,
   handleChangeTodo,
-}: CreateTodoFormInnerProps) => {
-  const form = useFormContext<z.infer<typeof createTodoFormSchemas>>();
+
+}: EditTodoFormInnerProps) => {
+  const form = useFormContext<UpdateTodoFormSchema>();
   return (
     <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
     <FormField
@@ -37,7 +31,7 @@ export const CreateTodoFormInner = ({
           <FormControl>
             <Input
               {...field}
-              type="formId"
+              type="text"
               placeholder="Enter your todo"
               // onChange={handleChangeTodo}
             />

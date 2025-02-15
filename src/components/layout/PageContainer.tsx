@@ -1,7 +1,9 @@
+
 import { cn } from "@/lib/utils";
 import React, { forwardRef } from "react";
 import { Header } from "../elements/Header";
 import { Footer } from "../elements/Footer";
+import { MainLayout } from "./MainLayout";
 
 type PageContainerProps = {
   withHeader?: boolean;
@@ -18,6 +20,7 @@ export const PageContainer = forwardRef<
     ref,
   ) => {
     return (
+      <MainLayout>
       <div className="h-full w-full">
         {withHeader && <Header />}
         <main ref={ref} className={cn("flex flex-col", className)} {...props}>
@@ -25,6 +28,7 @@ export const PageContainer = forwardRef<
         </main>
         {withFooter && <Footer />}
       </div>
+      </MainLayout>
     );
   },
 );

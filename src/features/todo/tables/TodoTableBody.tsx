@@ -6,6 +6,8 @@ import { Ellipsis } from "lucide-react";
 import { useTodos } from "../api";
 import { TodoTableBodySkeleton } from "../components/skeleton";
 import { TodoCheckbox } from "../components";
+import {Todo} from "@/features/todo/types";
+import { DeleteTodoDialog } from "../components/dialog/todoDialog";
 
 export const TodoTableBody = () => {
   const { data: todoList, isLoading: isTodoLoading } = useTodos();
@@ -13,12 +15,13 @@ export const TodoTableBody = () => {
   if (isTodoLoading) {
     return <TodoTableBodySkeleton />;
   }
+  
 
   return (
     <TableBody>
       {renderElements({
-        of: todoList,
-        render: (todo, index) => (
+        of: todoList?.data,
+        render: ( todo: Todo, index : number) => (
           <TableRow key={todo.id}>
             <TableCell className="text-center">{index + 1}</TableCell>
             <TableCell>{todo.text}</TableCell>
@@ -27,7 +30,7 @@ export const TodoTableBody = () => {
             </TableCell>
             <TableCell className="text-center">
               <div className="flex justify-center">
-                <Ellipsis className="h-5 w-5" />
+               <DeleteTodoDialog todoId={todo.id}/>
               </div>
             </TableCell>
           </TableRow>
